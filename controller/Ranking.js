@@ -1,28 +1,26 @@
-const { CatchAsync } = require("../middleware/catchAsyncError");
-const ErrorHandler = require("../utils/errorHandler");
-const RankingSchemaModel = require("../model/HotelRanking");
-const { parse, format, subDays, addDays } = require('date-fns');
-
+import ErrorHandler from "../utils/errorHandler.js";
+import RankingSchemaModel from "../model/HotelRanking.js";
 
 // create order
-exports.getHotelRankingData = CatchAsync(async (req, res, next) => {
+const getHotelRankingData = async (req, res, next) => {
     try {
 
-        const { hotelId, startDate } = req.query;
+        // const { hotelId, startDate } = req.query;
+        let startDate = new Date()
+        console.log(startDate,"startDatestartDatestartDatestartDate")
+        // let previousDate = 
+        let hotelId = req.query.hotelId
+
 
         if (!startDate) {
             return next(new ErrorHandler("Please provide a start date", 400));
         }
 
-        // if(!hotelId){
-        //     return next(new ErrorHandler("Please provide a hotel id", 400));
-        // }
-
-        let pipeline = []
-        const parsedDate_start = parse(startDate, 'dd-MM-yyyy', new Date());
-        const formattedDate_start = format(parsedDate_start, 'yyyy-MM-dd');
-        const previousDate = addDays(parsedDate_start, -1);
-        const formattedPreviousDate = format(previousDate, 'yyyy-MM-dd');
+        // let pipeline = []
+        // const parsedDate_start = parse(startDate, 'dd-MM-yyyy', new Date());
+        // const formattedDate_start = format(parsedDate_start, 'yyyy-MM-dd');
+        // const previousDate = addDays(parsedDate_start, -1);
+        // const formattedPreviousDate = format(previousDate, 'yyyy-MM-dd');
 
         pipeline.push({
             $match: {
@@ -31,8 +29,7 @@ exports.getHotelRankingData = CatchAsync(async (req, res, next) => {
                 }
             }
         });
-        // let low = hotelId & 0xFFFFFFFF;
-        // let high = hotelId / 0x100000000;
+
 
         pipeline.push({
             $unwind: "$ranking"
@@ -41,15 +38,6 @@ exports.getHotelRankingData = CatchAsync(async (req, res, next) => {
                 "ranking.rank": 390
             }
         });
-
-        // pipeline.push({
-        //     $unwind: "$ranking"
-        // }, {
-        //     $match: {
-        //         "ranking.ranking.hotelID.low": low,
-        //         "ranking.ranking.hotelID.high": Math.floor(high),
-        //     }
-        // });
 
         pipeline.push({
             $group: {
@@ -60,7 +48,6 @@ exports.getHotelRankingData = CatchAsync(async (req, res, next) => {
         });
 
         const data = await RankingSchemaModel.aggregate(pipeline);
-        // const data = await RankingSchemaModel.find();
 
         res.status(200).json({
             success: true,
@@ -71,4 +58,6 @@ exports.getHotelRankingData = CatchAsync(async (req, res, next) => {
         console.log(error.message);
         return next(new ErrorHandler(error.message, 500));
     }
-});
+};
+
+export { getHotelRankingData };
