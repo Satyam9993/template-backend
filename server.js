@@ -1,6 +1,12 @@
-const app = require('./app.js');
-require("dotenv").config();
-const { connectDB } = require('./utils/db.js');
+import app from './app.js'
+
+import dotenv from 'dotenv';
+
+dotenv.config({ path: './.env' });
+
+
+
+import { connectDB } from './utils/db.js';
 
 const port = process.env.PORT; 
 // creating a server

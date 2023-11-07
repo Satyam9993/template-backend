@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const { ErrorMiddleware } = require('./middleware/error.js');
-const getHotelRankingRouter = require('./routes/getHotelRanking.js');
+import express from 'express'
+import cors from 'cors'
+import { ErrorMiddleware } from './middleware/error.js';
+// const getHotelRankingRouter = require('./routes/getHotelRanking.js');
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(cors({
 }))
 
 // routes
-app.use('/api/v1', getHotelRankingRouter);
+// app.use('/api/v1', getHotelRankingRouter);
 
 // testing api
 app.get("/", (req, res)=>{
@@ -34,4 +34,5 @@ app.all("*", (req, res, next)=>{
 // Error Handle Middleware
 app.use(ErrorMiddleware);
 
-module.exports = app;
+// module.exports = app;
+export default app
